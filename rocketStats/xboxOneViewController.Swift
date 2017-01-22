@@ -26,14 +26,33 @@ class xboxOneViewController: UIViewController {
     @IBOutlet weak var shots: UILabel!
     @IBOutlet weak var assists: UILabel!
     @IBOutlet weak var shotAcc: UILabel!
+    @IBOutlet weak var duelRankImage: UIImageView!
+    @IBOutlet weak var doublesRankImage: UIImageView!
+    @IBOutlet weak var standardRankImage: UIImageView!
+    @IBOutlet weak var soloStandardRankImage: UIImageView!
+    @IBOutlet weak var doublesDivision: UILabel!
+    @IBOutlet weak var duelDivision: UILabel!
+    @IBOutlet weak var soloStandardDivision: UILabel!
+    @IBOutlet weak var standardDivision: UILabel!
+    @IBOutlet weak var standardMMR: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         xboxOneViewController.xboxURL += xboxTag
+        
         let getStats = statScraper()
-        getStats.scrapeForStats(URL: xboxOneViewController.xboxURL)
-        print(xboxStats)
+
+        getStats.scrapeForStats(URL: xboxOneViewController.xboxURL) {(completionHandler) in
+            //print(completionHandler)
+            if completionHandler {
+                self.setStats(statArray: statScraper.stats)
+                self.setRankImages()
+                self.setDivisionLabels()
+                self.standardMMR.text = statScraper.standard[2]
+            }
+        }
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -44,7 +63,6 @@ class xboxOneViewController: UIViewController {
     
     //sets the labels to the according stat
     func setStats(statArray: Array<String>) -> Void {
-        print(statArray)
         wins.text = statArray[4]
         saves.text = statArray[5]
         mvps.text = statArray[6]
@@ -53,5 +71,19 @@ class xboxOneViewController: UIViewController {
         shots.text = statArray[13]
         assists.text = statArray[14]
         shotAcc.text = statArray[15]
+    }
+    
+    func setRankImages() {
+        self.duelRankImage.image = UIImage(named: statScraper.duels[0])
+        self.doublesRankImage.image = UIImage(named: statScraper.doubles[0])
+        self.soloStandardRankImage.image = UIImage(named: statScraper.soloStandard[0])
+        self.standardRankImage.image = UIImage(named: statScraper.standard[0])
+    }
+    
+    func setDivisionLabels() {
+        doublesDivision.text = statScraper.doubles[1]
+        duelDivision.text = statScraper.duels[1]
+        soloStandardDivision.text = statScraper.soloStandard[1]
+        standardDivision.text = statScraper.standard[1]
     }
 }
